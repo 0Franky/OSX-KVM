@@ -2,7 +2,27 @@ from PyQt5.QtWidgets import QVBoxLayout, QGroupBox, QCheckBox, QLabel, QHBoxLayo
 import consts.app_settings as AppSettings
 from ui.components.flow_layout import FlowLayout
 
-def createGroupBox(title, content=[], show_switch=False, switch_title=""):
+def createFlexGroupBox(title, content=[], show_switch=False, switch_title=""):
+    # Aggiungi il contenuto alla box
+    flow_layout = FlowLayout(hSpacing=AppSettings.margin_value, vSpacing=AppSettings.margin_value)
+
+    for item in content:
+        flow_layout.addWidget(item)
+
+    # Wrappa la box_layout in un widget scorrevole
+    scroll_area = QScrollArea()
+    scroll_area.setWidgetResizable(True)
+ 
+    # Imposta uno stile senza bordo al QScrollArea
+    scroll_area.setStyleSheet("QScrollArea { border: none; padding: 0.5em; }")
+
+    scroll_content = QWidget()
+    scroll_content.setLayout(flow_layout)
+    scroll_area.setWidget(scroll_content)
+
+    return createGroupBoxSingleChild(title, scroll_area, show_switch, switch_title)
+
+def createGroupBoxSingleChild(title, widget, show_switch=False, switch_title=""):
     # Crea una box con titolo e contenuto
     group_box = QGroupBox(title)
 
@@ -23,25 +43,8 @@ def createGroupBox(title, content=[], show_switch=False, switch_title=""):
         switch_layout.addWidget(switch)
 
         main_layout.addLayout(switch_layout)
-
-    # Aggiungi il contenuto alla box
-    flow_layout = FlowLayout(hSpacing=AppSettings.margin_value, vSpacing=AppSettings.margin_value)
-
-    for item in content:
-        flow_layout.addWidget(item)
-
-    # Wrappa la box_layout in un widget scorrevole
-    scroll_area = QScrollArea()
-    scroll_area.setWidgetResizable(True)
-
-    # Imposta uno stile senza bordo al QScrollArea
-    scroll_area.setStyleSheet("QScrollArea { border: none; padding: 0.5em; }")
-
-    scroll_content = QWidget()
-    scroll_content.setLayout(flow_layout)
-    scroll_area.setWidget(scroll_content)
-
+  
     # Aggiungi il QScrollArea al layout principale
-    main_layout.addWidget(scroll_area)
+    main_layout.addWidget(widget)
 
     return group_box

@@ -18,6 +18,6 @@ def start_gui():
     window.show()
 
     # Imposta le dimensioni iniziali della finestra (larghezza x altezza)
-    window.resize(900, 500)
+    window.resize(1100, 680)
 
     app.exec_()
