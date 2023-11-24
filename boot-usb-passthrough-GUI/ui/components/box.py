@@ -7,12 +7,12 @@ def createGroupBox(title, content=[], show_switch=False, switch_title=""):
     group_box = QGroupBox(title)
 
     # Configura stile per spostare il titolo sopra il bordo
-    style_sheet = f"QGroupBox {{ border: 2px solid gray; border-radius: {AppSettings.border_radius}; margin-top: 0.5em; padding: 0.5em; }} "
+    style_sheet = f"QGroupBox {{ border: 2px solid gray; border-radius: {AppSettings.border_radius}; margin-top: 0.5em; }} "
     style_sheet += f"QGroupBox:title {{ subcontrol-origin: margin; subcontrol-position: top center; padding: 0 0.5em; }}"
     group_box.setStyleSheet(style_sheet)
 
-    # Imposta il layout della box
-    box_layout = QVBoxLayout(group_box)
+    # Crea un layout principale per la group_box
+    main_layout = QVBoxLayout(group_box)
 
     # Aggiungi uno switch opzionale
     if show_switch:
@@ -22,11 +22,10 @@ def createGroupBox(title, content=[], show_switch=False, switch_title=""):
         switch = QCheckBox(switch_title)
         switch_layout.addWidget(switch)
 
-        box_layout.addLayout(switch_layout)
+        main_layout.addLayout(switch_layout)
 
     # Aggiungi il contenuto alla box
     flow_layout = FlowLayout(hSpacing=AppSettings.margin_value, vSpacing=AppSettings.margin_value)
-    box_layout.addLayout(flow_layout)
 
     for item in content:
         flow_layout.addWidget(item)
@@ -34,9 +33,15 @@ def createGroupBox(title, content=[], show_switch=False, switch_title=""):
     # Wrappa la box_layout in un widget scorrevole
     scroll_area = QScrollArea()
     scroll_area.setWidgetResizable(True)
-    
+
+    # Imposta uno stile senza bordo al QScrollArea
+    scroll_area.setStyleSheet("QScrollArea { border: none; padding: 0.5em; }")
+
     scroll_content = QWidget()
-    scroll_content.setLayout(box_layout)
+    scroll_content.setLayout(flow_layout)
     scroll_area.setWidget(scroll_content)
 
-    return scroll_area
+    # Aggiungi il QScrollArea al layout principale
+    main_layout.addWidget(scroll_area)
+
+    return group_box

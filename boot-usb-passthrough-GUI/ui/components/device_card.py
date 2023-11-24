@@ -15,6 +15,8 @@ class DeviceCard(QWidget):
         super().__init__()
 
         self._device_info = device_info
+        self._icon_column_layout = None
+        self._icon_label = None
 
         # Impostazioni generali della card
         self.setObjectName("deviceCard")
@@ -59,7 +61,8 @@ class DeviceCard(QWidget):
         passthrough_combobox = QComboBox()
         passthrough_combobox.addItems([device_type.name for device_type in DeviceType])
         passthrough_combobox.setCurrentText(self._device_info.device_type.name)
-        passthrough_combobox.currentIndexChanged.connect(lambda index: self.update_device_type(index))
+        passthrough_combobox.currentIndexChanged.connect(lambda index: self.update_device_type(index + 1))
+        passthrough_combobox.currentIndexChanged.connect(self.update_icon)  # Connessione per l'aggiornamento dell'icona
         StyleUtil.setFontSize(passthrough_combobox, AppSettings.font_size_small)
 
         connect_button = QPushButton("Collega")
@@ -80,6 +83,7 @@ class DeviceCard(QWidget):
 
         # Prima colonna con l'icona
         icon_column_layout = QVBoxLayout()
+        self._icon_column_layout = icon_column_layout
         icon_label = self.create_icon_label()
         icon_column_layout.addWidget(icon_label, alignment=Qt.AlignCenter)
         main_layout.addLayout(icon_column_layout)
@@ -104,6 +108,12 @@ class DeviceCard(QWidget):
         )
 
         return main_layout
+    
+    def update_icon(self):
+        icon_label = self.create_icon_label()
+        icon_column_layout = self.layout().itemAt(0)
+        icon_column_layout.replaceWidget(icon_column_layout.itemAt(0).widget(), icon_label)
+        self.update()
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -116,6 +126,7 @@ class DeviceCard(QWidget):
         size = AppSettings.font_size * scale
 
         icon_label = QLabel()
+        self._icon_label = icon_label
         pixmap = get_image_from_url(self.get_icon_url())  # Sostituisci con l'URL effettivo
         if pixmap:
             # Calculate the scaled size while maintaining the aspect ratio
